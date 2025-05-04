@@ -56,7 +56,6 @@ public class AccountsHandler implements HttpHandler {
         String username = requestJson.getString("username");
         String password = requestJson.getString("password");
         String role = "user";
-
         String fullName = requestJson.optString("fullName");
         String email = requestJson.optString("email");
         String phone = requestJson.optString("phone");

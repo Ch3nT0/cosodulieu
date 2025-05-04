@@ -81,13 +81,12 @@ public class DatabaseUtil {
         JSONObject userJson = new JSONObject();
         try {
             Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            String sql = "SELECT username, fullname, email FROM users WHERE id = ?";
+            String sql = "SELECT  fullname, email FROM users WHERE id = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, accountID);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                userJson.put("username", rs.getString("username"));
                 userJson.put("fullname", rs.getString("fullname"));
                 userJson.put("email", rs.getString("email"));
             }
@@ -123,6 +122,27 @@ public class DatabaseUtil {
         }
 
         return role;
+    }
+
+    public static int getUserID(int accountID) {
+        int userID = -1;
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            String sql = "SELECT id FROM users WHERE accountID = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, accountID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                userID = rs.getInt("id");
+            }
+
+            rs.close();
+            ps.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userID;
     }
 
     public static int getAccountID(String username) {
@@ -245,4 +265,34 @@ public class DatabaseUtil {
         }
     }
 
+    static boolean saveBooking(int userID, int roomID, String checkInDate, String checkOutDate) {
+    try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+        conn.setAutoCommit(false); // Bắt đầu giao dịch
+
+        // Thêm vào bảng bookings
+        String insertBookingSql = "INSERT INTO bookings (userID, checkInDate, checkOutDate, roomID) VALUES (?, ?, ?, ?)";
+        PreparedStatement pstmt = conn.prepareStatement(insertBookingSql);
+
+        pstmt.setInt(1, userID);         // ID người dùng
+        pstmt.setString(2, checkInDate); // Ngày check-in
+        pstmt.setString(3, checkOutDate); // Ngày check-out
+        pstmt.setInt(4, roomID);         // ID phòng
+
+        int affectedRows = pstmt.executeUpdate();
+
+        if (affectedRows == 0) {
+            conn.rollback(); // Nếu không có dòng nào bị ảnh hưởng thì rollback
+            return false;
+        }
+
+        // Commit giao dịch
+        conn.commit();
+        pstmt.close();
+        return true;
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
 }

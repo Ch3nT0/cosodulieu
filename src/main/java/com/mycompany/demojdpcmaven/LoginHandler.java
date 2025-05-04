@@ -42,10 +42,12 @@ public class LoginHandler implements HttpHandler {
             } else {
                 // Nếu là user, trả về user info và isAdmin = false
                 int accountID = DatabaseUtil.getAccountID(username);
+                int userID = DatabaseUtil.getUserID(accountID);
                 JSONObject userJson = DatabaseUtil.getUserInfo(accountID);
                 userJson.put("role", role); // thêm role vào userJson
 
                 responseJson.put("user", userJson);
+                responseJson.put("userId", userID);
                 responseJson.put("isAdmin", false);
             }
 
