@@ -1,0 +1,248 @@
+package com.mycompany.demojdpcmaven;
+
+import java.sql.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class DatabaseUtil {
+
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/hotel_booking";
+    private static final String DB_USER = "root";
+    private static final String DB_PASSWORD = "chencode";
+
+    public static JSONArray getRoomsByHotelID(int hotelID) {
+        JSONArray jsonArray = new JSONArray();
+        String sql = "SELECT * FROM rooms WHERE hotelID = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, hotelID);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                JSONObject obj = new JSONObject();
+                obj.put("roomID", rs.getInt("id"));
+                obj.put("hotelID", rs.getInt("hotelID"));
+                obj.put("roomName", rs.getString("roomNumber"));
+                obj.put("price", rs.getDouble("pricePerNight"));
+                obj.put("roomType", rs.getString("roomType"));
+                obj.put("capacity", rs.getInt("capacity"));
+                obj.put("status", rs.getString("status"));
+                jsonArray.put(obj);
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi DB: " + e.getMessage());
+        }
+        return jsonArray;
+    }
+
+    public static JSONObject getRoomID(int roomID) {
+        JSONObject obj = new JSONObject();
+        String sql = "SELECT * FROM rooms WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, roomID);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                obj.put("roomID", rs.getInt("id"));
+                obj.put("hotelID", rs.getInt("hotelID"));
+                obj.put("roomName", rs.getString("roomNumber"));
+                obj.put("price", rs.getDouble("pricePerNight"));
+                obj.put("roomType", rs.getString("roomType"));
+                obj.put("capacity", rs.getInt("capacity"));
+                obj.put("status", rs.getString("status"));
+            } else {
+                return null; // Không tìm thấy phòng với roomID
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi DB: " + e.getMessage());
+            return null;
+        }
+        return obj;
+    }
+
+    public static boolean checkLogin(String username, String password) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            String sql = "SELECT * FROM accounts WHERE username=? AND password=?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.out.println("Lỗi login: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static JSONObject getUserInfo(int accountID) {
+        JSONObject userJson = new JSONObject();
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            String sql = "SELECT username, fullname, email FROM users WHERE id = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, accountID);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                userJson.put("username", rs.getString("username"));
+                userJson.put("fullname", rs.getString("fullname"));
+                userJson.put("email", rs.getString("email"));
+            }
+
+            rs.close();
+            ps.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return userJson;
+    }
+
+    public static String getRole(String username) {
+        String role = null;
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            String sql = "SELECT role FROM accounts WHERE username = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                role = rs.getString("role");
+            }
+
+            rs.close();
+            ps.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return role;
+    }
+
+    public static int getAccountID(String username) {
+        int accountID = -1;
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            String sql = "SELECT id FROM accounts WHERE username = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                accountID = rs.getInt("id");
+            }
+
+            rs.close();
+            ps.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return accountID;
+    }
+
+    public static JSONArray getAccountsJson() {
+        JSONArray jsonArray = new JSONArray();
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM accounts")) {
+
+            while (rs.next()) {
+                JSONObject obj = new JSONObject();
+                obj.put("account_id", rs.getInt("id"));
+                obj.put("username", rs.getString("username"));
+                obj.put("password", rs.getString("password"));
+                obj.put("role", rs.getString("role"));
+                jsonArray.put(obj);
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi DB: " + e.getMessage());
+        }
+        return jsonArray;
+    }
+
+    public static JSONArray getHotelJson(String location) {
+        JSONArray jsonArray = new JSONArray();
+        String sql = "SELECT * FROM hotels WHERE hotelAddress LIKE ?"; // Lọc theo địa chỉ khách sạn
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, "%" + location + "%"); // Sử dụng LIKE để tìm kiếm theo địa chỉ
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                JSONObject obj = new JSONObject();
+                obj.put("id", rs.getInt("id"));
+                obj.put("hotelName", rs.getString("hotelName"));
+                obj.put("hotelAddress", rs.getString("hotelAddress"));
+                obj.put("description", rs.getString("description"));
+                obj.put("img", rs.getString("img"));
+                jsonArray.put(obj);
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi DB: " + e.getMessage());
+        }
+        return jsonArray;
+    }
+
+    public static boolean registerAccountAndUser(String username, String password, String role,
+            String fullName, String email, String phone) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            conn.setAutoCommit(false); // Bắt đầu giao dịch
+
+            // Kiểm tra tài khoản đã tồn tại
+            String checkSql = "SELECT id FROM accounts WHERE username = ?";
+            PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+            checkStmt.setString(1, username);
+            ResultSet rs = checkStmt.executeQuery();
+
+            if (rs.next()) {
+                conn.rollback();
+                return false; // Tài khoản đã tồn tại
+            }
+
+            // Thêm vào bảng accounts
+            String insertAccountSql = "INSERT INTO accounts (username, password, role) VALUES (?, ?, ?)";
+            PreparedStatement accountStmt = conn.prepareStatement(insertAccountSql, Statement.RETURN_GENERATED_KEYS);
+            accountStmt.setString(1, username);
+            accountStmt.setString(2, password);
+            accountStmt.setString(3, role);
+            accountStmt.executeUpdate();
+
+            // Lấy account_id vừa thêm
+            ResultSet generatedKeys = accountStmt.getGeneratedKeys();
+            int accountId = -1;
+            if (generatedKeys.next()) {
+                accountId = generatedKeys.getInt(1);
+            } else {
+                conn.rollback();
+                return false;
+            }
+
+            // Thêm vào bảng user
+            String insertUserSql = "INSERT INTO users (accountID, fullName, email, phone) VALUES (?, ?, ?, ?)";
+            PreparedStatement userStmt = conn.prepareStatement(insertUserSql);
+            userStmt.setInt(1, accountId);
+            userStmt.setString(2, fullName);
+            userStmt.setString(3, email);
+            userStmt.setString(4, phone);
+            userStmt.executeUpdate();
+
+            // Commit giao dịch
+            conn.commit();
+            accountStmt.close();
+            userStmt.close();
+            checkStmt.close();
+            rs.close();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+}
