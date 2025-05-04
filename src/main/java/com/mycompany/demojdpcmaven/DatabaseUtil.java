@@ -265,34 +265,92 @@ public class DatabaseUtil {
         }
     }
 
-    static boolean saveBooking(int userID, int roomID, String checkInDate, String checkOutDate) {
-    try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-        conn.setAutoCommit(false); // Bắt đầu giao dịch
+    public static boolean insertRoom(String roomNumber, String pricePerNight, String capacity, String roomType, String status, String hotelID) {
+        try {
+            // Kết nối với cơ sở dữ liệu
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
 
-        // Thêm vào bảng bookings
-        String insertBookingSql = "INSERT INTO bookings (userID, checkInDate, checkOutDate, roomID) VALUES (?, ?, ?, ?)";
-        PreparedStatement pstmt = conn.prepareStatement(insertBookingSql);
+            // Chuẩn bị câu lệnh SQL
+            String query = "INSERT INTO rooms (roomNumber, pricePerNight, capacity, roomType, status, hotelID) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, roomNumber);
+            stmt.setString(2, pricePerNight);
+            stmt.setString(3, capacity);
+            stmt.setString(4, roomType);
+            stmt.setString(5, status);
+            stmt.setString(6, hotelID);
 
-        pstmt.setInt(1, userID);         // ID người dùng
-        pstmt.setString(2, checkInDate); // Ngày check-in
-        pstmt.setString(3, checkOutDate); // Ngày check-out
-        pstmt.setInt(4, roomID);         // ID phòng
+            // Thực thi câu lệnh
+            int rowsAffected = stmt.executeUpdate();
 
-        int affectedRows = pstmt.executeUpdate();
+            // Đóng kết nối
+            stmt.close();
+            connection.close();
 
-        if (affectedRows == 0) {
-            conn.rollback(); // Nếu không có dòng nào bị ảnh hưởng thì rollback
+            return rowsAffected > 0; // Nếu có phòng được thêm vào, trả về true
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // Trả về false nếu có lỗi
+        }
+    }
+
+    public static boolean insertHotel(String name, String address, String description, String imgLink) {
+        String sql = "INSERT INTO Hotels (hotelName, hotelAddress, description, img) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            conn.setAutoCommit(false); // Bắt đầu giao dịch
+
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, name);
+            stmt.setString(2, address);
+            stmt.setString(3, description);
+            stmt.setString(4, imgLink);
+
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                conn.rollback(); // Nếu không chèn được thì rollback
+                return false;
+            }
+
+            conn.commit(); // Commit giao dịch nếu thành công
+            stmt.close();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
-
-        // Commit giao dịch
-        conn.commit();
-        pstmt.close();
-        return true;
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return false;
     }
-}
+
+    static boolean saveBooking(int userID, int roomID, String checkInDate, String checkOutDate) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            conn.setAutoCommit(false); // Bắt đầu giao dịch
+
+            // Thêm vào bảng bookings
+            String insertBookingSql = "INSERT INTO bookings (userID, checkInDate, checkOutDate, roomID) VALUES (?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(insertBookingSql);
+
+            pstmt.setInt(1, userID);         // ID người dùng
+            pstmt.setString(2, checkInDate); // Ngày check-in
+            pstmt.setString(3, checkOutDate); // Ngày check-out
+            pstmt.setInt(4, roomID);         // ID phòng
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                conn.rollback(); // Nếu không có dòng nào bị ảnh hưởng thì rollback
+                return false;
+            }
+
+            // Commit giao dịch
+            conn.commit();
+            pstmt.close();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
