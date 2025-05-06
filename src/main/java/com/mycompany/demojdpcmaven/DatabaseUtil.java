@@ -209,7 +209,7 @@ public class DatabaseUtil {
     }
 
     public static boolean registerAccountAndUser(String username, String password, String role,
-            String fullName, String email, String phone) {
+                                                 String fullName, String email, String phone) {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             conn.setAutoCommit(false); // Bắt đầu giao dịch
 
@@ -242,7 +242,7 @@ public class DatabaseUtil {
                 return false;
             }
 
-            // Thêm vào bảng user
+            // Thêm vào bảng users
             String insertUserSql = "INSERT INTO users (accountID, fullName, email, phone) VALUES (?, ?, ?, ?)";
             PreparedStatement userStmt = conn.prepareStatement(insertUserSql);
             userStmt.setInt(1, accountId);
@@ -250,6 +250,11 @@ public class DatabaseUtil {
             userStmt.setString(3, email);
             userStmt.setString(4, phone);
             userStmt.executeUpdate();
+
+            // Gửi email xác nhận cho người dùng
+            String subject = "Chúc mừng bạn đã đăng ký thành công!";
+            String body = "Xin chào " + fullName + ",\n\nCảm ơn bạn đã đăng ký tại hệ thống của chúng tôi!";
+            SendEmail.sendEmail(email, subject, body); // Chú ý thư viện gửi email ở đây
 
             // Commit giao dịch
             conn.commit();
@@ -264,6 +269,7 @@ public class DatabaseUtil {
             return false;
         }
     }
+
 
     public static boolean insertRoom(String roomNumber, String pricePerNight, String capacity, String roomType, String status, String hotelID) {
         try {
@@ -353,4 +359,29 @@ public class DatabaseUtil {
             return false;
         }
     }
+
+    public static User getUserByAccountId(int accountId) {
+        User user = null;
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            String query = "SELECT id, full_name, email, phone FROM users WHERE account_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, accountId);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    int id = rs.getInt("id");
+                    String fullName = rs.getString("full_name");
+                    String email = rs.getString("email");
+                    String phone = rs.getString("phone");
+
+                    user = new User(accountId, phone, email, fullName, id);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+
+
 }
