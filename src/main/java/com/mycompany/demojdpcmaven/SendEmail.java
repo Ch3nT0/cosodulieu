@@ -6,38 +6,36 @@ import java.util.Properties;
 
 public class SendEmail {
 
-    public static void sendEmail(String recipientEmail, String subject, String body) {
-        String host = "smtp.gmail.com";
-        String port = "587";
-        String username = "your-email@gmail.com";  // Địa chỉ email của bạn
-        String password = "your-email-password";   // Mật khẩu ứng dụng Gmail (hoặc mật khẩu chính thức)
 
-        Properties properties = System.getProperties();
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", port);
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
+    private static final String USERNAME = "your-email@gmail.com";
+    private static final String PASSWORD = "your-app-password"; // App password 16 chữ, không phải mật khẩu thật
 
-        // Tạo phiên làm việc với thông tin tài khoản
-        Session session = Session.getInstance(properties, new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
-            }
-        });
-
+    public static boolean sendEmail(String recipientEmail, String subject, String body) {
         try {
-            // Soạn thư
-            MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(username));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientEmail));
-            message.setSubject(subject);
-            message.setText(body);
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", "smtp.gmail.com");
+            props.put("mail.smtp.port", "587");
 
-            // Gửi thư
+            Session session = Session.getInstance(props, new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(USERNAME, PASSWORD);
+                }
+            });
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(USERNAME));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+            message.setSubject(subject);
+            message.setText(body); // hoặc setContent(body, "text/html; charset=UTF-8");
+
             Transport.send(message);
-            System.out.println("Email đã được gửi đến " + recipientEmail);
+            return true;
+
         } catch (MessagingException e) {
             e.printStackTrace();
+            return false;
         }
     }
 }

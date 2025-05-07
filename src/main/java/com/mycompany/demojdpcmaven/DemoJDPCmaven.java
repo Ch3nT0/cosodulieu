@@ -17,6 +17,8 @@ public class DemoJDPCmaven {
         server.createContext("/booking", new BookingHandler());
         server.createContext("/add-hotel", new AddHotelHandler());
         server.createContext("/addRoom", new AddRoomHandler());
+        server.createContext("/send-email", new SendEmailHandler());
+        server.createContext("/api/momo", new MomoPaymentHandler());
         server.setExecutor(null);
         server.start();
         System.out.println("Server run in: http://localhost:8080/accounts");
