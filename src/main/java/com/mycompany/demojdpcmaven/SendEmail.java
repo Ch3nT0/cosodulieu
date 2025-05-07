@@ -7,8 +7,8 @@ import java.util.Properties;
 public class SendEmail {
 
 
-    private static final String USERNAME = "your-email@gmail.com";
-    private static final String PASSWORD = "your-app-password"; // App password 16 chữ, không phải mật khẩu thật
+    private static final String USERNAME = "phamxuanhoanglong@gmail.com";
+    private static final String PASSWORD = "pavhsaowkouenzou"; // App password 16 chữ, không phải mật khẩu thật
 
     public static boolean sendEmail(String recipientEmail, String subject, String body) {
         try {
