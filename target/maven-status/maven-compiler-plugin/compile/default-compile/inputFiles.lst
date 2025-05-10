@@ -1,12 +1,16 @@
-C:\Users\Laptop K1\Desktop\ptit\Chen\java&SQL\demoJDPCmaven\src\main\java\com\mycompany\demojdpcmaven\accounts.java
-C:\Users\Laptop K1\Desktop\ptit\Chen\java&SQL\demoJDPCmaven\src\main\java\com\mycompany\demojdpcmaven\AccountsHandler.java
-C:\Users\Laptop K1\Desktop\ptit\Chen\java&SQL\demoJDPCmaven\src\main\java\com\mycompany\demojdpcmaven\AddHotelHandler.java
-C:\Users\Laptop K1\Desktop\ptit\Chen\java&SQL\demoJDPCmaven\src\main\java\com\mycompany\demojdpcmaven\AddRoomHandler.java
-C:\Users\Laptop K1\Desktop\ptit\Chen\java&SQL\demoJDPCmaven\src\main\java\com\mycompany\demojdpcmaven\BookingHandler.java
-C:\Users\Laptop K1\Desktop\ptit\Chen\java&SQL\demoJDPCmaven\src\main\java\com\mycompany\demojdpcmaven\BookingRoomHandler.java
-C:\Users\Laptop K1\Desktop\ptit\Chen\java&SQL\demoJDPCmaven\src\main\java\com\mycompany\demojdpcmaven\DatabaseUtil.java
-C:\Users\Laptop K1\Desktop\ptit\Chen\java&SQL\demoJDPCmaven\src\main\java\com\mycompany\demojdpcmaven\DemoJDPCmaven.java
-C:\Users\Laptop K1\Desktop\ptit\Chen\java&SQL\demoJDPCmaven\src\main\java\com\mycompany\demojdpcmaven\HotelHandle.java
-C:\Users\Laptop K1\Desktop\ptit\Chen\java&SQL\demoJDPCmaven\src\main\java\com\mycompany\demojdpcmaven\HotelIDHandler.java
-C:\Users\Laptop K1\Desktop\ptit\Chen\java&SQL\demoJDPCmaven\src\main\java\com\mycompany\demojdpcmaven\LoginHandler.java
-C:\Users\Laptop K1\Desktop\ptit\Chen\java&SQL\demoJDPCmaven\src\main\java\com\mycompany\demojdpcmaven\RoomIDHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\DemoJDPCmaven.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\DeleteHotelHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\EditHotelHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\accounts.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\AccountsHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\AddRoomHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\DeleteRoomHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\BookingHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\HotelHandle.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\RoomIDHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\BookingRoomHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\AddHotelHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\EditRoomHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\HotelIDHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\LoginHandler.java
+D:\BE\cosodulieu\src\main\java\com\mycompany\demojdpcmaven\DatabaseUtil.java

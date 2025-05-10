@@ -1,6 +1,9 @@
 package com.mycompany.demojdpcmaven;
 
 import java.sql.*;
+import static java.sql.DriverManager.getConnection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -8,7 +11,7 @@ public class DatabaseUtil {
 
     private static final String DB_URL = "jdbc:mysql://localhost:3306/hotel_booking";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "chencode";
+    private static final String DB_PASSWORD = "huuviet2004";
 
     public static JSONArray getRoomsByHotelID(int hotelID) {
         JSONArray jsonArray = new JSONArray();
@@ -353,4 +356,69 @@ public class DatabaseUtil {
             return false;
         }
     }
+    
+    public static boolean updateHotel(int id, String name, String address, String description, String img) {
+        String sql = "UPDATE hotels SET hotelName = ?, hotelAddress = ?, description = ?, img = ? WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setString(2, address);
+            stmt.setString(3, description);
+            stmt.setString(4, img);
+            stmt.setInt(5, id);
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public static boolean deleteHotel(int id) {
+        String sql = "DELETE FROM hotels WHERE id = ?";
+
+        try (Connection conn =  DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean updateRoom(int roomId, String roomNumber, double pricePerNight, int capacity, String roomType, String status, int hotelID) {
+        String sql = "UPDATE rooms SET roomNumber = ?, pricePerNight = ?, capacity = ?, roomType = ?, status = ?, hotelID = ? WHERE id = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, roomNumber);
+            stmt.setDouble(2, pricePerNight);
+            stmt.setInt(3, capacity);
+            stmt.setString(4, roomType);
+            stmt.setString(5, status);
+            stmt.setInt(6, hotelID);
+            stmt.setInt(7, roomId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public static boolean deleteRoom(int roomId){
+        String sql = "DELETE FROM rooms WHERE id = ?";
+        try (Connection conn = getConnection(DB_URL, DB_USER, DB_PASSWORD); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, roomId);
+            int affected = stmt.executeUpdate();
+            return affected > 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseUtil.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    
 }
